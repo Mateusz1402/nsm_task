@@ -1,5 +1,5 @@
 # NMS DevOps Intern Programming Task
-Author: Mateusz Sabat
+Author: Mateusz Sabat</br>
         mateusz.sabat38@gmail.com
 
 
@@ -17,4 +17,18 @@ In addition, data integral veryfication should be done by SHA256.
 - Python 3.13,
 - Docker
 - AlmaLinux 9
+
+
+
+## Workflow
+
+* 1
+        Design the project structure and requirements.
+
+* 2
+        Implement the 'get_hash()' for generating unique SHA256 hash, based on the input directory file. 
+
+        Testing the functionality of created function.
+
+
 
