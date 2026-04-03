@@ -1,5 +1,7 @@
 import hashlib
 import sys
+import argparse
+import os
 
 def get_hash(file_path):
     # Generating a unique SHA256 hash code for entry file.
@@ -25,27 +27,64 @@ def get_hash(file_path):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="NMS directory manifest tool")
+    #Input:
+    parser.add_argument("-input_dir", required=True, help="Directory to scan")
+    #Output:
+    parser.add_argument("-output", required=True, help="Output manifest file")
 
-    temp_dir1 = "tests/plik ze spacja.txt"
-    temp_dir2 = "tests/data.txt"
-    temp_dir3 = "tests/subfolder/plik ze spacja.txt"
-    temp_dir4 = "tests/subfolder/data.txt"
-    temp_dir = temp_dir3
+    args = parser.parse_args()
+    #Take absolute input directory (if symlink)
+    input_dir = os.path.abspath(args.input_dir)
+    #Secure input from hazardous
+    if not os.path.isdir(input_dir):
+        print(f"Error: {input_dir} is not a directory!")
+        sys.exit(1)
 
-    checksum = get_hash(temp_dir)
+    output_file = args.output
 
-    temp_space = False
-    for char in temp_dir:
-        if char == ' ':
-            temp_space = True
+    manifest_list = []
 
-    if temp_space:
-        temp_dir = f'"{temp_dir}"'
 
-    print(f"{temp_dir} {checksum}")
+    #explore the whole directory tree, starting from input_dir point.
+    for root, dirs, files in os.walk(input_dir):
+        for name in files:
+            full_path = os.path.join(root, name)
 
-    
+            #Checking for regular file type or symlink 
+            if not (os.path.isfile(full_path) or os.path.islink(full_path)):
+                print(f"Error: Unsupported file type found at {full_path}")
+                sys.exit(1)
+            
+            if os.path.islink(full_path):
+                target_path = os.path.realpath(full_path)
+                #Checking whether the symlink points the file in target directory.
+                if not target_path.startswith(input_dir):
+                    print(f"Error: Symlink {full_path} points outside the target directory!")
+                    sys.exit(1)
+            
+            #Generating the SHA256 hash
+            checksum = get_hash(full_path)
 
+
+            #Cut the absolute directory to be started from target directory.
+            rel_path = os.path.relpath(full_path, input_dir)
+
+            #Spaces case
+            if " " in rel_path:
+                formatted_path = f'"{rel_path}"'
+            else:
+                #Non spaces case
+                formatted_path = rel_path
+
+            manifest_list.append(f"{formatted_path} {checksum}")
+    try:
+        with open(output_file, "w", encoding="utf-8") as file:
+            file.write("\n".join(manifest_list) + "\n")
+        print(f"Manifest file successfully saved to {output_file}")
+    except Exception as e:
+        print(f"Error while writing manifest: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
