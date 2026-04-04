@@ -52,3 +52,12 @@ In addition, data integral veryfication should be done by SHA256.
         - Symlink links outside: program correctly handle an error of poining a file that is outside valid directory area.
 
 
+* **4**<br>
+        Implement the verify_manifest() function: function compare all hash codes from existed manifest file with a new ones. In case of mismatch of any pair, the result is Failed.
+        Old main logic goes into generate_manifest(), to clear the code layout. The verification feature was tested and passed the tests.<br>
+
+        Testing Procedures
+
+        Generating new manifest file, change a single char or add additional space inside test's file. After running the verification, the program returns the fail. In other case (not performing any changes) the result is OK.
+
+
