@@ -61,3 +61,10 @@ In addition, data integral veryfication should be done by SHA256.
         Generating new manifest file, change a single char or add additional space inside test's file. After running the verification, the program returns the fail. In other case (not performing any changes) the result is OK.
 
 
+* **5**<br>
+        Uses almalinux/9-base to meet the OS requirements and install Python inside repository. The previous logic has been copied inside. 
+        Implement bash scrip, to meet the functionality of running the logic. Configured a check of docker/podman, relative paths convertion and read-only flag.
+        The output volume enables mounting the host's current working directory inside the container.
+        The script uses a bash array OTHER_ARGS to capture additional flags (--check). 
+
+
